@@ -21,6 +21,8 @@ const userSchema = new mongoose.Schema({
   
   twoFactorSecret: String,
   googleId: String,
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
 });
 
 userSchema.pre('save', async function(next) {

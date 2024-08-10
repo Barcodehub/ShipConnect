@@ -1,6 +1,7 @@
 const express = require('express');
 const authController = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
+const { forgotPassword, resetPassword } = require('../controllers/authController');
 const router = express.Router();
 
 router.get('/csrf-token', authController.getCsrfToken);
@@ -11,6 +12,12 @@ router.post('/generateTwoFactor', protect, authController.generateTwoFactor);
 router.post('/verifyTwoFactor', protect, authController.verifyTwoFactor);
 router.get('/google', authController.googleAuth);
 router.get('/google/callback', authController.googleAuthCallback);
+
+
+router.post('/forgotpassword', forgotPassword);
+router.put('/resetpassword/:resettoken', resetPassword);
+
+
 
 router.get('/me', protect, authController.getMe);
 
