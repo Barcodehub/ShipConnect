@@ -74,6 +74,9 @@ const friendRoutes = require('./routes/contentRoutes/friendRoutes');
 const storyRoutes = require('./routes/reel-story-Routes/storyRoutes');
 const reelRoutes = require('./routes/reel-story-Routes/reelRoutes');
 
+const communityRoutes = require('./routes/communityRoutes/communities');
+const eventsRoutes = require('./routes/communityRoutes/events');
+
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/users', userRoutes);
@@ -83,6 +86,9 @@ app.use('/api/friends', friendRoutes);
 
 app.use('/api/stories', storyRoutes);
 app.use('/api/reels', reelRoutes);
+
+app.use('/api/communities', communityRoutes);
+app.use('/api/events', eventsRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
