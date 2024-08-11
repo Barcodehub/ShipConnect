@@ -18,7 +18,9 @@ const userSchema = new mongoose.Schema({
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   reels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reel' }],
-  story: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Story' }],
+  stories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Story' }],
+  community: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Community' }],
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
   privacy: { type: String, enum: ['public', 'friends', 'private'], default: 'public' },
   
   twoFactorSecret: String,
