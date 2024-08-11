@@ -24,20 +24,20 @@ exports.protect = async (req, res, next) => {
   }
 
   try {
-    console.log('JWT_SECRET:', process.env.JWT_SECRET);
+    //console.log('JWT_SECRET:', process.env.JWT_SECRET);
     
     // Decodifica el token sin verificar para ver su contenido
     const decodedWithoutVerify = jwt.decode(token);
-    console.log('Token decodificado sin verificar:', decodedWithoutVerify);
+    //console.log('Token decodificado sin verificar:', decodedWithoutVerify);
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Token decodificado y verificado:', decoded);
+    //console.log('Token decodificado y verificado:', decoded);
 
     console.log('Buscando usuario con ID:', decoded.id);
     //console.log('Estado de la conexión:', mongoose.connection.readyState);
     
   const currentUser = await User.findById(decoded.id);
-  console.log('Usuario encontrado:', currentUser);
+  //console.log('Usuario encontrado:', currentUser);
 
     if (!currentUser) {
       return res.status(401).json({
