@@ -13,7 +13,7 @@ exports.protect = async (req, res, next) => {
     } else {
       token = req.headers.authorization; // Si se envía el token directamente
     }
-    console.log('Token extraído:', token);
+    //console.log('Token extraído:', token);
   }
 
   if (!token) {
@@ -33,7 +33,7 @@ exports.protect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     //console.log('Token decodificado y verificado:', decoded);
 
-    console.log('Buscando usuario con ID:', decoded.id);
+    //console.log('Buscando usuario con ID:', decoded.id);
     //console.log('Estado de la conexión:', mongoose.connection.readyState);
     
   const currentUser = await User.findById(decoded.id);
