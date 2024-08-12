@@ -9,6 +9,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
+const http = require('http');
+const socketIo = require('socket.io');
 require('dotenv').config();
 const app = express();
 
@@ -18,10 +20,14 @@ mongoose.connect(process.env.MONGODB_URI, {
   useUnifiedTopology: true,
 });
 const cors = require('cors');
-app.use(cors({
-  origin: 'http://localhost:3002', // Your content-request-service URL
-  credentials: true
-}));
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:3002",
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
 // Middleware
 app.use(express.json({ limit: '10kb' })); // Limita el tamaño del body
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
@@ -64,6 +70,40 @@ app.get('/api/auth/csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
+
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  
+  socket.on('join', (userId) => {
+    socket.join(userId);
+  });
+
+  socket.on('sendMessage', async ({ senderId, receiverId, content }) => {
+    try {
+      const sender = await User.findById(senderId);
+      const receiver = await User.findById(receiverId);
+
+      if (sender.friends.includes(receiverId)) {
+        const newMessage = new Message({
+          sender: senderId,
+          receiver: receiverId,
+          content
+        });
+        await newMessage.save();
+
+        io.to(receiverId).emit('newMessage', newMessage);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+});
+
+
 // Rutas
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/contentRoutes/postRoutes');
@@ -76,6 +116,8 @@ const reelRoutes = require('./routes/reel-story-Routes/reelRoutes');
 
 const communityRoutes = require('./routes/communityRoutes/communities');
 const eventsRoutes = require('./routes/communityRoutes/events');
+
+const chatRoutes = require('./routes/chattingRoutes/chatRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
@@ -90,5 +132,7 @@ app.use('/api/reels', reelRoutes);
 app.use('/api/communities', communityRoutes);
 app.use('/api/events', eventsRoutes);
 
+app.use('/api/chat', chatRoutes);
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+server.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
