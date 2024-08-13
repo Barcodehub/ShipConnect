@@ -164,7 +164,7 @@ exports.deleteCommunity = async (req, res) => {
       return res.status(401).json({ msg: 'User not authorized' });
     }
 
-    await community.remove();
+    await Community.deleteOne({ _id: req.params.id });
     res.json({ msg: 'Community removed' });
   } catch (err) {
     console.error(err.message);

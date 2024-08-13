@@ -102,14 +102,30 @@ exports.updateReel = async (req, res) => {
   }
 };
 
+const cloudinary = require('cloudinary').v2;
+
 exports.deleteReel = async (req, res) => {
   try {
-    const reel = await Reel.findOneAndDelete({ _id: req.params.reelId, author: req.user.id });
+    const reel = await Reel.findOne({ _id: req.params.reelId, author: req.user.id });
     if (!reel) {
       return res.status(404).json({ message: 'Reel not found or you are not the author' });
     }
-    res.json({ message: 'Reel deleted successfully' });
+
+    // Eliminar el video de Cloudinary
+    if (reel.videoUrl) {
+      const publicId = `reels/${reel.videoUrl.split('/').pop().split('.')[0]}`;
+      await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
+    }
+
+    // Eliminar el documento Reel de la base de datos
+    await Reel.findByIdAndDelete(req.params.reelId);
+
+    // Actualizar el usuario para eliminar la referencia al reel
+    await User.findByIdAndUpdate(req.user.id, { $pull: { reels: req.params.reelId } });
+
+    res.json({ message: 'Reel and associated video deleted successfully' });
   } catch (error) {
+    console.error('Error in deleteReel:', error);
     res.status(500).json({ message: error.message });
   }
 };

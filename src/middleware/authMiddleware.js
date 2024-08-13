@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const mongoose = require('mongoose');
 exports.protect = async (req, res, next) => {
-  console.log('Headers:', req.headers);
+  //console.log('Headers:', req.headers);
   
   let token;
 

@@ -90,16 +90,28 @@ exports.updateStory = async (req, res) => {
   }
 };
 
-
-
 exports.deleteStory = async (req, res) => {
   try {
-    const story = await Story.findOneAndDelete({ _id: req.params.storyId, author: req.user.id });
+    const story = await Story.findOne({ _id: req.params.storyId, author: req.user.id });
     if (!story) {
       return res.status(404).json({ message: 'Story not found or you are not the author' });
     }
-    res.json({ message: 'Story deleted successfully' });
+
+    // Si hay una URL de media, eliminar el archivo de Cloudinary
+    if (story.mediaUrl) {
+      const publicId = story.mediaUrl.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(publicId);
+    }
+
+    // Eliminar el documento Story de la base de datos
+    await Story.findByIdAndDelete(req.params.storyId);
+
+    // Actualizar el usuario para eliminar la referencia a la historia
+    await User.findByIdAndUpdate(req.user.id, { $pull: { stories: req.params.storyId } });
+
+    res.json({ message: 'Story and associated media deleted successfully' });
   } catch (error) {
+    console.error('Error in deleteStory:', error);
     res.status(500).json({ message: error.message });
   }
 };
