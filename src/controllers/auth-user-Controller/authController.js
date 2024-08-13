@@ -1,12 +1,12 @@
-const User = require('../models/User');
+const User = require('../../models/User');
 const jwt = require('jsonwebtoken');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const sendEmail = require('../utils/emailService');
+const sendEmail = require('../../utils/emailService');
 const crypto = require('crypto');
-const Role = require('../models/Role');
+const Role = require('../../models/Role');
 require('dotenv').config();
 
 // Configuración de Google OAuth

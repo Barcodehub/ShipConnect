@@ -127,3 +127,47 @@ exports.assignModerator = async (req, res) => {
     res.status(500).json({ message: 'Error assigning moderator', error: error.message });
   }
 };
+
+
+
+exports.updateCommunity = async (req, res) => {
+  try {
+    let community = await Community.findById(req.params.id);
+    if (!community) return res.status(404).json({ msg: 'Community not found' });
+    
+    // Verificar si el usuario es el creador de la comunidad
+    if (community.creator.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
+
+    const { name, description, privacy } = req.body;
+    community = await Community.findByIdAndUpdate(
+      req.params.id,
+      { name, description, privacy },
+      { new: true }
+    );
+
+    res.json(community);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
+
+exports.deleteCommunity = async (req, res) => {
+  try {
+    const community = await Community.findById(req.params.id);
+    if (!community) return res.status(404).json({ msg: 'Community not found' });
+    
+    // Verificar si el usuario es el creador de la comunidad
+    if (community.creator.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
+
+    await community.remove();
+    res.json({ msg: 'Community removed' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
