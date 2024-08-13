@@ -1,7 +1,7 @@
 const express = require('express');
-const authController = require('../controllers/authController');
-const { protect } = require('../middleware/authMiddleware');
-const { forgotPassword, resetPassword } = require('../controllers/authController');
+const authController = require('../../controllers/authController');
+const { protect } = require('../../middleware/authMiddleware');
+const { forgotPassword, resetPassword } = require('../../controllers/authController');
 const router = express.Router();
 
 router.get('/csrf-token', authController.getCsrfToken);

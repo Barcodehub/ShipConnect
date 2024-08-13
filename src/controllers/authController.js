@@ -81,9 +81,6 @@ exports.login = async (req, res) => {
 
   try {
     const { email, password } = req.body;
-    // Log para verificar si se recibieron los datos
-    console.log('Email recibido:', email);
-    console.log('Password recibido:', password);
     if (!email || !password) {
       return res.status(400).json({
         status: 'fail',
@@ -94,16 +91,10 @@ exports.login = async (req, res) => {
     // Intentar encontrar al usuario por email
     const user = await User.findOne({ email }).select('+password');
 
-    // Log para verificar si se encontró el usuario
-    if (user) {
-        console.log('Usuario encontrado:', user);
-    } else {
-        console.log('Usuario no encontrado');
-    }
-
+   
     // Verificar si la contraseña es correcta
     const isCorrectPassword = user && await user.correctPassword(password, user.password);
-    console.log('Contraseña correcta:', isCorrectPassword);
+    //console.log('Contraseña correcta:', isCorrectPassword);
 
     if (!user || !isCorrectPassword) {
       return res.status(401).json({
