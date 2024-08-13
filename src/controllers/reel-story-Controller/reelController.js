@@ -102,7 +102,7 @@ exports.updateReel = async (req, res) => {
   }
 };
 
-const cloudinary = require('cloudinary').v2;
+
 
 exports.deleteReel = async (req, res) => {
   try {
