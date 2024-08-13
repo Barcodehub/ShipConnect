@@ -19,6 +19,35 @@ mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+const Role = require('./models/Role');
+const roles = [
+  { name: 'admin', description: 'Administrator with full access' },
+  { name: 'user', description: 'Regular user' },
+  { name: 'moderator', description: 'Global moderator' },
+  { name: 'community_moderator', description: 'Moderator for specific communities' }
+];
+
+const initRoles = async () => {
+  try {
+    for (let role of roles) {
+      await Role.findOneAndUpdate({ name: role.name }, role, { upsert: true });
+    }
+    console.log('Roles initialized successfully');
+  } catch (error) {
+    console.error('Error initializing roles:', error);
+  } 
+};
+
+initRoles();
+
+const initAdmin = require('./initAdmin');
+initAdmin();
+
+
+
+
+
+//chat inicio
 const cors = require('cors');
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -119,6 +148,8 @@ const eventsRoutes = require('./routes/communityRoutes/events');
 
 const chatRoutes = require('./routes/chattingRoutes/chatRoutes');
 
+const adminRoutes = require('./routes/adminRoutes');
+
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/users', userRoutes);
@@ -134,5 +165,6 @@ app.use('/api/events', eventsRoutes);
 
 app.use('/api/chat', chatRoutes);
 
+app.use('/api/admin', adminRoutes);
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));

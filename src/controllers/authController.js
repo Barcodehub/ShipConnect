@@ -6,6 +6,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const sendEmail = require('../utils/emailService');
 const crypto = require('crypto');
+const Role = require('../models/Role');
 require('dotenv').config();
 
 // Configuración de Google OAuth
@@ -48,12 +49,13 @@ passport.deserializeUser(async (id, done) => {
 });
 
 exports.signup = async (req, res) => {
-  console.log('JWT_SECRET:', process.env.JWT_SECRET);
     try {
+      const userRole = await Role.findOne({ name: 'user' });
       const newUser = await User.create({
         email: req.body.email,
         password: req.body.password,
         username: req.body.username,
+        roles: [userRole._id],
       });
   
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
@@ -79,7 +81,9 @@ exports.login = async (req, res) => {
 
   try {
     const { email, password } = req.body;
-
+    // Log para verificar si se recibieron los datos
+    console.log('Email recibido:', email);
+    console.log('Password recibido:', password);
     if (!email || !password) {
       return res.status(400).json({
         status: 'fail',
@@ -87,9 +91,21 @@ exports.login = async (req, res) => {
       });
     }
 
+    // Intentar encontrar al usuario por email
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || !(await user.correctPassword(password, user.password))) {
+    // Log para verificar si se encontró el usuario
+    if (user) {
+        console.log('Usuario encontrado:', user);
+    } else {
+        console.log('Usuario no encontrado');
+    }
+
+    // Verificar si la contraseña es correcta
+    const isCorrectPassword = user && await user.correctPassword(password, user.password);
+    console.log('Contraseña correcta:', isCorrectPassword);
+
+    if (!user || !isCorrectPassword) {
       return res.status(401).json({
         status: 'fail',
         message: 'Email o contraseña incorrectos',
