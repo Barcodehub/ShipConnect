@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const Role = require('../models/Role');
+const User = require('../../models/User');
+const Role = require('../../models/Role');
 
 exports.updateRole = async (req, res) => {
     try {

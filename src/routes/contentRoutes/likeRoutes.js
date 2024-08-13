@@ -5,5 +5,6 @@ const { protect } = require('../../middleware/authMiddleware');
 
 router.post('/post/:postId', protect, likeController.togglePostLike);
 router.post('/comment/:commentId', protect, likeController.toggleCommentLike);
+router.delete('/:type/:id', protect, likeController.removeLike);
 
 module.exports = router;

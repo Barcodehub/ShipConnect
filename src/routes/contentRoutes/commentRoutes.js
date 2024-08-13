@@ -5,5 +5,8 @@ const { protect } = require('../../middleware/authMiddleware');
 
 router.post('/', protect, commentController.createComment);
 router.get('/:postId', protect, commentController.getComments);
+router.put('/:commentId', protect, commentController.updateComment);
+router.delete('/:commentId', protect, commentController.deleteComment);
+
 
 module.exports = router;
