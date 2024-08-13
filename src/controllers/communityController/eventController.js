@@ -79,7 +79,7 @@ exports.deleteEvent = async (req, res) => {
       return res.status(401).json({ msg: 'User not authorized' });
     }
 
-    await event.remove();
+    await Community.deleteOne({ _id: req.params.id });
     res.json({ msg: 'Event removed' });
   } catch (err) {
     console.error(err.message);

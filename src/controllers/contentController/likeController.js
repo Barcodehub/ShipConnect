@@ -34,23 +34,3 @@ exports.toggleCommentLike = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
-
-exports.removeLike = async (req, res) => {
-  try {
-    const { type, id } = req.params;
-    let result;
-    if (type === 'post') {
-      result = await Post.findByIdAndUpdate(id, { $pull: { likes: req.user.id } }, { new: true });
-    } else if (type === 'comment') {
-      result = await Comment.findByIdAndUpdate(id, { $pull: { likes: req.user.id } }, { new: true });
-    } else {
-      return res.status(400).json({ message: 'Invalid like type' });
-    }
-    if (!result) {
-      return res.status(404).json({ message: `${type.charAt(0).toUpperCase() + type.slice(1)} not found` });
-    }
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
