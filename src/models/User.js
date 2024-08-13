@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false,
   },
+  roles: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Role'
+  }],
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   reels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Reel' }],
