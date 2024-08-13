@@ -8,11 +8,15 @@ const User = require('../../models/User');
 exports.createStory = async (req, res) => {
   try {
     let mediaUrl = '';
+    let mediaPublicId = ''; // Variable para el public_id
+
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: 'stories',
       });
+      console.log('Cloudinary upload result:', result);
       mediaUrl = result.secure_url;
+      mediaPublicId = result.public_id; // Guardar el public_id
     }
 
     const { content, privacy } = req.body;
@@ -21,19 +25,23 @@ exports.createStory = async (req, res) => {
       author: req.user.id,
       content: content,
       mediaUrl: mediaUrl,
+      mediaPublicId: mediaPublicId, // Guardar el public_id en la base de datos
       privacy: privacy
     });
 
     await newStory.save();
+    console.log('Story saved:', newStory);
 
-     // Actualizar el usuario para incluir el nuevo Story
-     await User.findByIdAndUpdate(req.user.id, { $push: { stories: newStory._id } });
+    // Actualizar el usuario para incluir el nuevo Story
+    await User.findByIdAndUpdate(req.user.id, { $push: { stories: newStory._id } });
 
     // Eliminar el archivo local después de subirlo a Cloudinary
-    await unlinkFile(req.file.path);
+    await fs.unlink(req.file.path);
+    console.log('Local file deleted:', req.file.path);
 
     res.status(201).json(newStory);
   } catch (error) {
+    console.error('Error creating story:', error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -96,11 +104,10 @@ exports.deleteStory = async (req, res) => {
     if (!story) {
       return res.status(404).json({ message: 'Story not found or you are not the author' });
     }
-
-    // Si hay una URL de media, eliminar el archivo de Cloudinary
-    if (story.mediaUrl) {
-      const publicId = story.mediaUrl.split('/').pop().split('.')[0];
-      await cloudinary.uploader.destroy(publicId);
+    console.log('Deleting media with public_id:', story.mediaPublicId);
+    // Si hay un public_id de media, eliminar el archivo de Cloudinary
+    if (story.mediaPublicId) {
+      await cloudinary.uploader.destroy(story.mediaPublicId);
     }
 
     // Eliminar el documento Story de la base de datos

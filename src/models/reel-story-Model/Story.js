@@ -9,6 +9,7 @@ const StorySchema = new mongoose.Schema({
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   privacy: { type: String, enum: ['public', 'friends', 'private'], default: 'public' },
   mediaUrl: String,
+  mediaPublicId: String, // Nuevo campo para guardar el public_id
   createdAt: {
     type: Date,
     default: Date.now,
