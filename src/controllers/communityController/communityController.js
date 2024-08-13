@@ -86,3 +86,44 @@ exports.approveJoinRequest = async (req, res) => {
     res.status(500).send('Server error');
   }
 };
+
+
+exports.assignModerator = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    const community = await Community.findById(id);
+    if (!community) {
+      return res.status(404).json({ message: 'Community not found' });
+    }
+
+    // Check if the requester is the creator of the community
+    if (community.creator.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'Only the community creator can assign moderators' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the user is a member of the community
+    if (!community.members.includes(userId)) {
+      return res.status(400).json({ message: 'User must be a member of the community to be assigned as moderator' });
+    }
+
+    // Check if the user is already a moderator
+    if (community.moderators.includes(userId)) {
+      return res.status(400).json({ message: 'User is already a moderator of this community' });
+    }
+
+    // Assign the user as a moderator
+    community.moderators.push(userId);
+    await community.save();
+
+    res.status(200).json({ message: 'Moderator assigned successfully', community });
+  } catch (error) {
+    res.status(500).json({ message: 'Error assigning moderator', error: error.message });
+  }
+};
