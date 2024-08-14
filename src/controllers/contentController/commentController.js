@@ -1,11 +1,33 @@
 const Comment = require('../../models/contentModel/Comment');
 const Post = require('../../models/contentModel/Post');
+const Reel = require('../../models/reel-story-Model/Reel');
 
 exports.createComment = async (req, res) => {
   try {
     const { postId, content } = req.body;
-    const comment = await Comment.create({ author: req.user.id, post: postId, content });
+    const comment = await Comment.create({ 
+      author: req.user.id, 
+      content, 
+      contentId: postId, 
+      contentType: 'Post' 
+    });
     await Post.findByIdAndUpdate(postId, { $push: { comments: comment._id } });
+    res.status(201).json(comment);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.createCommentReel = async (req, res) => {
+  try {
+    const { reelId, content } = req.body;
+    const comment = await Comment.create({ 
+      author: req.user.id, 
+      content, 
+      contentId: reelId, 
+      contentType: 'Reel' 
+    });
+    await Reel.findByIdAndUpdate(reelId, { $push: { comments: comment._id } });
     res.status(201).json(comment);
   } catch (error) {
     res.status(400).json({ message: error.message });

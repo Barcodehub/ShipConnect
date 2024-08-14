@@ -1,5 +1,8 @@
 const Post = require('../../models/contentModel/Post');
 const Comment = require('../../models/contentModel/Comment');
+const Reel = require('../../models/reel-story-Model/Reel');
+const Story = require('../../models/reel-story-Model/Story');
+
 
 exports.togglePostLike = async (req, res) => {
   try {
@@ -30,6 +33,41 @@ exports.toggleCommentLike = async (req, res) => {
     }
     await comment.save();
     res.json(comment);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
+exports.toggleReelLike = async (req, res) => {
+  try {
+    const { reelId } = req.params;
+    const reel = await Reel.findById(reelId);
+    const likeIndex = reel.likes.indexOf(req.user.id);
+    if (likeIndex > -1) {
+      reel.likes.splice(likeIndex, 1);
+    } else {
+      reel.likes.push(req.user.id);
+    }
+    await reel.save();
+    res.json(reel);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+exports.toggleStoryLike = async (req, res) => {
+  try {
+    const { storyId } = req.params;
+    const story = await Story.findById(storyId);
+    const likeIndex = story.likes.indexOf(req.user.id);
+    if (likeIndex > -1) {
+      story.likes.splice(likeIndex, 1);
+    } else {
+      story.likes.push(req.user.id);
+    }
+    await story.save();
+    res.json(story);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
