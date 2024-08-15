@@ -10,8 +10,8 @@ const MongoStore = require('connect-mongo');
 const passport = require('passport');
 
 const setupMiddleware = (app) => {
-  app.use(express.json({ limit: '10kb' }));  // Limita el tamaño del body
-  app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+  app.use(express.json({ limit: process.env.BODY_LIMIT || '10kb' })); // Limita el tamaño del body
+  app.use(express.urlencoded({ extended: true, limit: process.env.BODY_LIMIT || '10kb' }));
   app.use(cookieParser());
 
   // Configuración de seguridad
@@ -21,8 +21,8 @@ const setupMiddleware = (app) => {
 
   // Rate limiting
   const limiter = rateLimit({
-    max: 100, // Máximo 100 solicitudes
-    windowMs: 60 * 60 * 1000, // 1 hora
+    max: process.env.RATE_LIMIT_MAX || 100, // Máximo 100 solicitudes
+    windowMs: process.env.RATE_LIMIT_WINDOW_MS || 60 * 60 * 1000,  // 1 hora
     message: 'Demasiadas solicitudes desde esta IP, por favor intente de nuevo en una hora.',
   });
   app.use('/api', limiter);
@@ -36,7 +36,7 @@ const setupMiddleware = (app) => {
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24 * 7,
+      maxAge: process.env.SESSION_MAX_AGE || 1000 * 60 * 60 * 24 * 7,
     },
   }));
 

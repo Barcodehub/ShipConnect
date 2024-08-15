@@ -177,7 +177,10 @@ ShipConnect is a social networking platform developed using Node.js and MongoDB.
     CLOUDINARY_API_KEY: Cloudinary API key.
     CLOUDINARY_API_SECRET: Cloudinary API secret.
     QR_CODE_SECRET: Secret key for generating QR codes.
-
+    RATE_LIMIT_MAX: Maximum number of requests allowed within the defined time window
+    RATE_LIMIT_WINDOW_MS: Time window in milliseconds for rate limiting (3600000 ms = 1 hour)
+    BODY_LIMIT: Size limit for JSON and URL-encoded request bodies
+    SESSION_MAX_AGE: Maximum session lifetime in milliseconds (604800000 ms = 7 days)
 
 ## Installation and Setup
 
