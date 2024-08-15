@@ -3,14 +3,26 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "Author": "Brayan Barco",
+  "Author": "Brayan Alexander Barco Cardenas",
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/Barcodehub/ShipConnect.git"
+},
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
-  "keywords": [],
+  "keywords": [
+  "social-network",
+  "nodejs",
+  "Community application",
+  "Messaging application",
+  "Event management",
+  "Multimedia content application",
+  "CSRF protection"
+],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.4.0",
