@@ -1,3 +1,13 @@
+/**
+ * @fileoverview
+ * Copyright (c) 2024 Brayan Alexander Barco Cardenas. All Rights Reserved.
+ *
+ * Licensed under the MIT License with Attribution Clause. You may obtain a copy of the License at
+ * https://github.com/Barcodehub/ShipConnect
+ *
+ * This file is part of ShipConnect.
+ */
+
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
