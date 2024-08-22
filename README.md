@@ -149,6 +149,13 @@ ShipConnect is a social networking platform developed using Node.js and MongoDB.
 
 - PUT /api/admin/roles: Update user roles.
 
+  To test the API endpoints, you can use Postman or any other API testing tool. Make sure to include the JWT token-login in the header for protected routes, and csrf-token.
+
+  Example:
+
+  Authorization: `<your_login_token>`
+  X-CSRF-Token: `<your_csrf_token>`
+
 ### Security Measures
 
   ShipConnect incorporates several security measures to protect user data and ensure safe interactions:
