@@ -15,7 +15,10 @@ const setupMiddleware = (app) => {
   app.use(cookieParser());
 
   // Configuración de seguridad
-  app.use(helmet()); // Cabeceras HTTP seguras
+  app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
+  })); // Cabeceras HTTP seguras
   app.use(xss()); // Sanitización contra XSS
   app.use(mongoSanitize()); // Prevención de inyección NoSQL
 
@@ -36,7 +39,8 @@ const setupMiddleware = (app) => {
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
-      maxAge: process.env.SESSION_MAX_AGE || 1000 * 60 * 60 * 24 * 7,
+      sameSite: 'lax',
+      maxAge: Number(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24 * 7,
     },
   }));
 
@@ -45,7 +49,12 @@ const setupMiddleware = (app) => {
   app.use(passport.session());
 
   // CSRF protection
-  app.use(csrf({ cookie: true }));
+  app.use(csrf({ 
+    cookie: { 
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    }
+  }));
 
   app.get('/api/auth/csrf-token', (req, res) => {
     res.json({ csrfToken: req.csrfToken() });

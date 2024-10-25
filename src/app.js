@@ -9,6 +9,7 @@
  */
 
 const express = require('express');
+const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
 require('dotenv').config();
@@ -16,17 +17,23 @@ const connectDB = require('./config/database');
 const setupMiddleware = require('./middleware');
 const setupRoutes = require('./routes');
 const setupSocketIO = require('./socket');
-const initAdmin = require('./initAdmin');
+const initAdmin = require('./config/initAdmin');
 const app = express();
 
-//chat inicio
+const corsOptions = {
+  origin: 'http://localhost:3002', // URL de tu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
+  exposedHeaders: ['X-CSRF-Token'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+
+// Socket.io setup con CORS
 const server = http.createServer(app);
 const io = socketIo(server, {
-  cors: {
-    origin: process.env.FRONTEND_URL,
-    methods: ["GET", "POST"],
-    credentials: true
-  }
+  cors: corsOptions
 });
 
 connectDB();
