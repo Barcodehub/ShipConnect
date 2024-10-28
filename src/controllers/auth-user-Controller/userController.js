@@ -97,3 +97,58 @@ exports.deleteAccount = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+
+
+exports.updateProfilePicture = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha proporcionado una imagen' });
+    }
+
+    // Sube la imagen a Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'profile_pictures',
+      transformation: [{ width: 150, height: 150, crop: 'limit' }]
+    });
+
+    // Actualiza el usuario con la nueva URL de la imagen
+    await User.findByIdAndUpdate(req.user.id, { profilePicture: result.secure_url });
+
+    // Si no quieres guardar localmente, no eliminas el archivo local
+    res.status(200).json({ message: 'Imagen de perfil actualizada', imageUrl: result.secure_url });
+  } catch (error) {
+    console.error('Error en updateProfilePicture:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Eliminar foto de perfil
+exports.deleteProfilePicture = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    
+    if (!user || !user.profilePicture) {
+      return res.status(404).json({ message: 'Usuario o imagen no encontrada' });
+    }
+
+    // Elimina la imagen de Cloudinary
+    const publicId = user.profilePicture.split('/').pop().split('.')[0]; // Obtiene el public_id
+    await cloudinary.uploader.destroy(`profile_pictures/${publicId}`);
+
+    // Actualiza el usuario para eliminar la URL de la imagen
+    await User.findByIdAndUpdate(req.user.id, { profilePicture: null });
+
+    res.status(200).json({ message: 'Imagen de perfil eliminada' });
+  } catch (error) {
+    console.error('Error en deleteProfilePicture:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+

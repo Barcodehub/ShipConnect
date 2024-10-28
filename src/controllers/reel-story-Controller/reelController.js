@@ -67,6 +67,19 @@ exports.getReels = async (req, res) => {
   }
 };
 
+exports.getMyReels = async (req, res) => {
+  try {
+    const reels = await Reel.find({ author: req.user.id })
+      .populate('author', 'username')
+      .sort('-createdAt');
+    res.json(reels);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
+
 exports.updateReelPrivacy = async (req, res) => {
   try {
     const { reelId } = req.params;

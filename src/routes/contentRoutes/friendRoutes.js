@@ -8,4 +8,6 @@ router.post('/respond', protect, friendController.respondToFriendRequest);
 router.get('/requests', protect, friendController.getFriendRequests);
 router.delete('/:friendId', protect, friendController.removeFriend);
 
+router.get('/myfriends', protect, friendController.getMyFriends);
+
 module.exports = router;

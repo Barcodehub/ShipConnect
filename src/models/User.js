@@ -41,6 +41,13 @@ const userSchema = new mongoose.Schema({
   googleId: String,
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+
+   // Nuevo campo para la foto de perfil
+   profilePicture: {
+    public_id: String,
+    url: String
+  },
+
 });
 
 userSchema.pre('save', async function(next) {

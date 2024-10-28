@@ -11,4 +11,6 @@ router.delete('/:reelId', protect, reelController.deleteReel);
 
 router.put('/:reelId/privacy', protect, reelController.updateReelPrivacy);
 
+router.get('/user',protect, reelController.getMyReels);
+
 module.exports = router;

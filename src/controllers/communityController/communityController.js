@@ -1,6 +1,19 @@
 const Community = require('../../models/communityModel/Community');
 const User = require('../../models/User');
 
+
+exports.getMyCommunities = async (req, res) => {
+  try {
+    const communities = await Community.find({ members: req.user.id }).populate('creator', 'username');
+    res.json(communities);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+};
+
+
+
 exports.createCommunity = async (req, res) => {
   try {
     const { name, description, privacy } = req.body;

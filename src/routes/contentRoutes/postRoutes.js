@@ -10,6 +10,8 @@ router.get('/news-feed', protect, postController.getNewsFeed);
 router.patch('/:postId/privacy', protect, postController.updatePostPrivacy);
 router.delete('/:postId', protect, postController.deletePost);
 router.put('/:postId', protect, postController.updatePost);
+// ruta para mis publicaciones un buscar posts
 
+router.get('/user', protect, postController.getMyPosts);
 
 module.exports = router;
