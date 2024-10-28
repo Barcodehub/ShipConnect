@@ -1,6 +1,18 @@
 const User = require('../../models/User');
 const FriendRequest = require('../../models/contentModel/FriendRequest');
 
+
+exports.getMyFriends = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('friends', 'username email');
+    res.json(user.friends);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
+
 exports.sendFriendRequest = async (req, res) => {
   try {
     const { receiverId } = req.body;

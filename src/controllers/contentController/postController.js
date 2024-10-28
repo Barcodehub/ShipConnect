@@ -64,6 +64,19 @@ exports.getNewsFeed = async (req, res) => {
   }
 };
 
+exports.getMyPosts = async (req, res) => {
+  try {
+    const posts = await Post.find({ author: req.user.id })
+      .populate('author', 'username')
+      .sort('-createdAt');
+    res.json(posts);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+
+
 exports.updatePostPrivacy = async (req, res) => {
   try {
     const { postId } = req.params;
