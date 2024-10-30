@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../../controllers/auth-user-Controller/userController');
 const { protect } = require('../../middleware/authMiddleware');
-const upload = require('../../middleware/upload');
+const upload = require('../../middleware/upload_profile');
 
 router.get('/profile', protect, userController.getUserProfile);
 router.put('/profile', protect, userController.updateUserProfile);

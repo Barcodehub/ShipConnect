@@ -44,8 +44,8 @@ const userSchema = new mongoose.Schema({
 
    // Nuevo campo para la foto de perfil
    profilePicture: {
-    public_id: String,
-    url: String
+    type: String,
+    default: '' // URL por defecto si lo deseas
   },
 
 });
