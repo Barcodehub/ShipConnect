@@ -10,8 +10,8 @@ const MongoStore = require('connect-mongo');
 const passport = require('passport');
 
 const setupMiddleware = (app) => {
-  app.use(express.json({ limit: process.env.BODY_LIMIT || '10kb' })); // Limita el tamaño del body
-  app.use(express.urlencoded({ extended: true, limit: process.env.BODY_LIMIT || '10kb' }));
+  app.use(express.json({ limit: process.env.BODY_LIMIT || '10mb' })); // Limita el tamaño del body
+  app.use(express.urlencoded({ extended: true, limit: process.env.BODY_LIMIT || '50mb' }));
   app.use(cookieParser());
 
   // Configuración de seguridad
