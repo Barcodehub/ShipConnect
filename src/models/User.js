@@ -13,6 +13,9 @@ const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
+
+  bio: String,
+  
   email: {
     type: String,
     required: [true, 'Por favor proporcione un email'],
@@ -47,6 +50,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '' // URL por defecto si lo deseas
   },
+
+     // Nuevo campo para la foto de portada
+     coverPicture: {
+      type: String,
+      default: '' // URL por defecto si lo deseas
+    },
 
 });
 

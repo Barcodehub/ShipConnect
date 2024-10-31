@@ -24,10 +24,10 @@ exports.getUserProfile = async (req, res) => {
 
 exports.updateUserProfile = async (req, res) => {
   try {
-    const { username, email, privacy } = req.body;
+    const { username, bio, email, privacy } = req.body;
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { username, email, privacy },
+      { username, bio, email, privacy },
       { new: true, runValidators: true }
     ).select('-password');
     res.json(user);
@@ -127,7 +127,7 @@ exports.updateProfilePicture = async (req, res) => {
       // Extraer el public_id de la URL de Cloudinary
       const urlParts = user.profilePicture.split('/');
       const filenamePart = urlParts[urlParts.length - 1];
-      oldImagePublicId = `profile-pictures/${filenamePart.split('.')[0]}`;
+      oldImagePublicId = `profile-pictures/${user._id}/${filenamePart.split('.')[0]}`;
     }
 
     // Convertir el buffer a base64 para subirlo a Cloudinary
@@ -136,7 +136,7 @@ exports.updateProfilePicture = async (req, res) => {
 
     // Subir la nueva imagen a Cloudinary
     const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
-      folder: 'profile-pictures',
+      folder: `profile-pictures/${user._id}`,
       transformation: [
         { width: 400, height: 400, crop: 'limit' },
         { quality: 'auto' }
@@ -172,24 +172,76 @@ exports.updateProfilePicture = async (req, res) => {
 };
 
 exports.deleteProfilePicture = async (req, res) => {
+ 
+  //eliminar foto anterior de cloudinary y luego poner la foto por default
+};
+
+
+
+
+
+
+
+
+
+
+
+exports.updateCoverPicture = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    
-    if (user.profilePicture && user.profilePicture.public_id) {
-      await cloudinary.uploader.destroy(user.profilePicture.public_id);
+    if (!req.file) {
+      return res.status(400).json({ message: 'No se ha proporcionado ninguna imagen.' });
     }
 
-    user.profilePicture = undefined;
+    // Obtener el usuario actual
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Si existe una imagen anterior, obtener su public_id para eliminarla después
+    let oldImagePublicId = null;
+    if (user.coverPicture) {
+      // Extraer el public_id de la URL de Cloudinary
+      const urlParts = user.coverPicture.split('/');
+      const filenamePart = urlParts[urlParts.length - 1];
+      oldImagePublicId = `cover-pictures/${user._id}/${filenamePart.split('.')[0]}`;
+    }
+
+    // Convertir el buffer a base64 para subirlo a Cloudinary
+    const b64 = Buffer.from(req.file.buffer).toString('base64');
+    const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+    // Subir la nueva imagen a Cloudinary
+    const cloudinaryResult = await cloudinary.uploader.upload(dataURI, {
+      folder: `cover-pictures/${user._id}`,
+      transformation: [
+        { width: 1200, height: 400, crop: 'fill' },
+        { quality: 'auto' }
+      ]
+    });
+
+    // Actualizar el usuario con la nueva URL de la imagen
+    user.coverPicture = cloudinaryResult.secure_url;
     await user.save();
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Foto de perfil eliminada correctamente'
+    // Si había una imagen anterior, eliminarla de Cloudinary
+    if (oldImagePublicId) {
+      try {
+        await cloudinary.uploader.destroy(oldImagePublicId);
+      } catch (deleteError) {
+        console.error('Error al eliminar la imagen anterior:', deleteError);
+        // Continuamos aunque haya error en la eliminación
+      }
+    }
+
+    res.json({
+      message: 'Foto de portada actualizada exitosamente',
+      coverPicture: cloudinaryResult.secure_url
     });
   } catch (error) {
+    console.error('Error al actualizar la foto de portada:', error);
     res.status(500).json({
-      status: 'error',
-      message: 'Error al eliminar la foto de perfil',
+      message: 'Error al actualizar la foto de portada',
       error: error.message
     });
   }

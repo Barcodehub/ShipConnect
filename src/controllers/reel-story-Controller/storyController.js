@@ -12,7 +12,7 @@ exports.createStory = async (req, res) => {
 
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: 'stories',
+        folder: `stories/${req.user.id}`,
       });
       console.log('Cloudinary upload result:', result);
       mediaUrl = result.secure_url;
@@ -107,7 +107,9 @@ exports.deleteStory = async (req, res) => {
     console.log('Deleting media with public_id:', story.mediaPublicId);
     // Si hay un public_id de media, eliminar el archivo de Cloudinary
     if (story.mediaPublicId) {
-      await cloudinary.uploader.destroy(story.mediaPublicId);
+      const publicId = `story/${req.user.id}/${story.mediaPublicId.split('/').pop().split('.')[0]}`;
+      await cloudinary.uploader.destroy(publicId, mediaPublicId);
+      //await cloudinary.uploader.destroy(story.mediaPublicId);
     }
 
     // Eliminar el documento Story de la base de datos
