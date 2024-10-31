@@ -67,7 +67,7 @@ exports.getNewsFeed = async (req, res) => {
 exports.getMyPosts = async (req, res) => {
   try {
     const posts = await Post.find({ author: req.user.id })
-      .populate('author', 'username')
+      .populate('author', 'username profilePicture')
       .sort('-createdAt');
     res.json(posts);
   } catch (error) {

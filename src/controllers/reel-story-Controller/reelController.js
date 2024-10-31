@@ -10,27 +10,23 @@ exports.createReel = async (req, res) => {
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path, {
         resource_type: "video",
-        folder: "reels",
+        folder: `reels/${req.user.id}`,
       });
       videoUrl = result.secure_url;
     }
-
     const { description, privacy } = req.body;
-
     const newReel = new Reel({
       author: req.user.id,
       videoUrl: videoUrl,
       description: description,
       privacy: privacy
     });
-
     await newReel.save();
     
     // Actualizar el usuario para incluir el nuevo reel
     await User.findByIdAndUpdate(req.user.id, { $push: { reels: newReel._id } });
-
-    console.log('Ruta del archivo:', req.file.path);
-
+    
+    // Eliminar el archivo local después de subirlo a Cloudinary
     try {
       // Intentar eliminar el archivo usando la versión de promesas
       await fs.unlink(req.file.path);
@@ -123,19 +119,19 @@ exports.deleteReel = async (req, res) => {
     if (!reel) {
       return res.status(404).json({ message: 'Reel not found or you are not the author' });
     }
-
+    
     // Eliminar el video de Cloudinary
     if (reel.videoUrl) {
-      const publicId = `reels/${reel.videoUrl.split('/').pop().split('.')[0]}`;
+      const publicId = `reels/${req.user.id}/${reel.videoUrl.split('/').pop().split('.')[0]}`;
       await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
     }
-
+    
     // Eliminar el documento Reel de la base de datos
     await Reel.findByIdAndDelete(req.params.reelId);
-
+    
     // Actualizar el usuario para eliminar la referencia al reel
     await User.findByIdAndUpdate(req.user.id, { $pull: { reels: req.params.reelId } });
-
+    
     res.json({ message: 'Reel and associated video deleted successfully' });
   } catch (error) {
     console.error('Error in deleteReel:', error);
