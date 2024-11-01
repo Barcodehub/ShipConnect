@@ -5,15 +5,19 @@ const Reel = require('../../models/reel-story-Model/Reel');
 exports.createComment = async (req, res) => {
   try {
     const { postId, content } = req.body;
+    
     const comment = await Comment.create({ 
-      author: req.user.id, 
-      content, 
-      contentId: postId, 
-      contentType: 'Post' 
+      author: req.user.id,
+      post: postId,       // Requerido por el modelo
+      content,
+      contentId: postId,  // Requerido por el modelo
+      contentType: 'Post' // Requerido por el modelo
     });
+    
     await Post.findByIdAndUpdate(postId, { $push: { comments: comment._id } });
     res.status(201).json(comment);
   } catch (error) {
+    console.error('Error creating comment:', error); // Para debugging
     res.status(400).json({ message: error.message });
   }
 };
@@ -37,7 +41,7 @@ exports.createCommentReel = async (req, res) => {
 exports.getComments = async (req, res) => {
   try {
     const { postId } = req.params;
-    const comments = await Comment.find({ post: postId }).populate('author', 'username').sort('-createdAt');
+    const comments = await Comment.find({ post: postId }).populate('author', 'username pictureProfile').sort('-createdAt');
     res.json(comments);
   } catch (error) {
     res.status(400).json({ message: error.message });
