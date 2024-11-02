@@ -4,14 +4,29 @@ const FriendRequest = require('../../models/contentModel/FriendRequest');
 
 exports.getMyFriends = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('friends', 'username email');
+    const user = await User.findById(req.user.id).populate('friends', 'username email profilePicture slug');
     res.json(user.friends);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
+exports.getUserFriends = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Obtener userId de los parámetros
+    const user = await User.findById(userId)
+      .populate('friends', 'username profilePicture slug') // Obtener datos de los amigos
+      .sort('-createdAt'); // Si `createdAt` no está en `friends`, puedes omitir `.sort()`
 
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    res.json(user.friends); // Devolver la lista de amigos
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 exports.sendFriendRequest = async (req, res) => {
   try {

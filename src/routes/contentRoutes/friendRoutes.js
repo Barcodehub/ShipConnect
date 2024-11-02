@@ -9,5 +9,6 @@ router.get('/requests', protect, friendController.getFriendRequests);
 router.delete('/:friendId', protect, friendController.removeFriend);
 
 router.get('/myfriends', protect, friendController.getMyFriends);
+router.get('/user/:userId', friendController.getUserFriends);
 
 module.exports = router;
