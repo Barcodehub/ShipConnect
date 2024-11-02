@@ -13,5 +13,6 @@ router.put('/:postId', protect, postController.updatePost);
 // ruta para mis publicaciones un buscar posts
 
 router.get('/user', protect, postController.getMyPosts);
+router.get('/user/:userId', postController.getUserPosts);
 
 module.exports = router;

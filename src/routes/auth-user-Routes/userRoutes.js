@@ -18,4 +18,7 @@ router.delete('/profile-picture', protect, userController.deleteProfilePicture);
 
 //Ruta portada perfil
 router.put('/cover-picture', protect, upload.single('image'), userController.updateCoverPicture);
+
+// Nueva ruta para ver perfiles de usuario por slug
+router.get('/:slug', userController.getProfileBySlug);
 module.exports = router;

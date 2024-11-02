@@ -9,7 +9,6 @@ const FriendRequest = require('../../models/contentModel/FriendRequest');
 const Reel = require('../../models/reel-story-Model/Reel');
 const Story = require('../../models/reel-story-Model/Story');
 
-
 exports.getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -243,6 +242,62 @@ exports.updateCoverPicture = async (req, res) => {
     res.status(500).json({
       message: 'Error al actualizar la foto de portada',
       error: error.message
+    });
+  }
+};
+
+
+
+
+
+
+
+//url perfil user
+exports.getProfileBySlug = async (req, res) => {
+  try {
+    const user = await User.findOne({ slug: req.params.slug })
+      .select('-password -twoFactorSecret -resetPasswordToken -resetPasswordExpire')
+      .populate('posts')
+      .populate('friends', 'username profilePicture slug')
+      .populate('community')
+      .populate('events');
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No se encontró el perfil de usuario',
+      });
+    }
+
+    // Verificar la privacidad del perfil
+    if (user.privacy === 'private' && (!req.user || !user.friends.includes(req.user._id))) {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'Este perfil es privado',
+      });
+    }
+
+    if (user.privacy === 'friends' && (!req.user || !user.friends.includes(req.user._id))) {
+      // Si el perfil es solo para amigos, mostrar información limitada
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          username: user.username,
+          profilePicture: user.profilePicture,
+          privacy: user.privacy,
+        },
+      });
+    }
+
+    // Si el perfil es público o el usuario tiene acceso, mostrar toda la información
+    res.status(200).json({
+      status: 'success',
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Error en el servidor',
     });
   }
 };

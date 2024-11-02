@@ -75,7 +75,18 @@ exports.getMyPosts = async (req, res) => {
   }
 };
 
-
+// Crear nuevo endpoint para obtener posts por userId
+exports.getUserPosts = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Obtener userId de los parámetros
+    const posts = await Post.find({ author: userId })
+      .populate('author', 'username profilePicture')
+      .sort('-createdAt');
+    res.json(posts);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 exports.updatePostPrivacy = async (req, res) => {
   try {
