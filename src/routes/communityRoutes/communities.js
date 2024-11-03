@@ -4,7 +4,7 @@ const { protect } = require('../../middleware/authMiddleware');
 const { isCommunityModerator } = require('../../middleware/roleMiddleware');
 const { createCommunity, getPublicCommunities, joinCommunity, approveJoinRequest, assignModerator,
     updateCommunity,
-    deleteCommunity, getMyCommunities } = require('../../controllers/communityController/communityController');
+    deleteCommunity, getMyCommunities, getUserCommunities } = require('../../controllers/communityController/communityController');
 
 
 router.post('/', protect, createCommunity);
@@ -16,5 +16,6 @@ router.put('/:id', protect, updateCommunity);
 router.delete('/:id', protect, deleteCommunity);
 
 router.get('/user', protect, getMyCommunities);
+router.get('/user/:userId', getUserCommunities);
 
 module.exports = router;

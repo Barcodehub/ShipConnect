@@ -12,6 +12,17 @@ exports.getMyCommunities = async (req, res) => {
   }
 };
 
+exports.getUserCommunities = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Obtener userId de los parámetros
+    const communities = await Community.find({ creator: userId })
+      .populate('creator', 'username')
+      .sort('-createdAt');
+    res.json(communities);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 
 exports.createCommunity = async (req, res) => {
