@@ -8,6 +8,8 @@ router.post('/respond', protect, friendController.respondToFriendRequest);
 router.get('/requests', protect, friendController.getFriendRequests);
 router.delete('/:friendId', protect, friendController.removeFriend);
 
+router.get('/status/:userId', protect, friendController.getFriendshipStatus);
+
 router.get('/myfriends', protect, friendController.getMyFriends);
 router.get('/user/:userId', friendController.getUserFriends);
 

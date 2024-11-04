@@ -28,6 +28,43 @@ exports.getUserFriends = async (req, res) => {
   }
 };
 
+
+exports.getFriendshipStatus = async (req, res) => {
+  try {
+      const { userId } = req.params;
+      
+      // Verificar si son amigos
+      const user = await User.findById(req.user.id);
+      if (user.friends.includes(userId)) {
+          return res.json({ status: 'friends' });
+      }
+      
+      // Verificar si hay una solicitud pendiente
+      const pendingRequest = await FriendRequest.findOne({
+          $or: [
+              { sender: req.user.id, receiver: userId, status: 'pending' },
+              { sender: userId, receiver: req.user.id, status: 'pending' }
+          ]
+      });
+      
+      if (pendingRequest) {
+          return res.json({ 
+              status: 'pending',
+              // Indica si el usuario actual envió o recibió la solicitud
+              direction: pendingRequest.sender.toString() === req.user.id ? 'sent' : 'received'
+          });
+      }
+      
+      // Si no hay relación
+      res.json({ status: null });
+      
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 exports.sendFriendRequest = async (req, res) => {
   try {
     const { receiverId } = req.body;
@@ -71,7 +108,7 @@ exports.respondToFriendRequest = async (req, res) => {
 exports.getFriendRequests = async (req, res) => {
   try {
     const friendRequests = await FriendRequest.find({ receiver: req.user.id, status: 'pending' })
-      .populate('sender', 'username');
+      .populate('sender', 'username pictureProfile');
     res.json(friendRequests);
   } catch (error) {
     res.status(400).json({ message: error.message });
