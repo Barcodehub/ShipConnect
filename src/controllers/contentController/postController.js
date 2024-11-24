@@ -57,7 +57,7 @@ exports.getNewsFeed = async (req, res) => {
         { author: req.user.id },
         { privacy: 'public' }
       ]
-    }).populate('author', 'username').sort('-createdAt');
+    }).populate('author', 'username profilePicture').sort('-createdAt');
     res.json(posts);
   } catch (error) {
     res.status(400).json({ message: error.message });

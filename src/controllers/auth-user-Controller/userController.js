@@ -262,6 +262,8 @@ exports.getProfileBySlug = async (req, res) => {
       .populate('community')
       .populate('events');
 
+  
+      
     if (!user) {
       return res.status(404).json({
         status: 'fail',
@@ -269,15 +271,21 @@ exports.getProfileBySlug = async (req, res) => {
       });
     }
 
+    // Añadir esta lógica para determinar si son amigos
+    let isFriend = false;
+    if (req.user) {
+      isFriend = user.friends.some(friend => String(friend._id) === String(req.user._id));
+    }
+
     // Verificar la privacidad del perfil
-    if (user.privacy === 'private' && (!req.user || !user.friends.includes(req.user._id))) {
+    if (user.privacy === 'private' && (!req.user || !isFriend)) {
       return res.status(403).json({
         status: 'fail',
         message: 'Este perfil es privado',
       });
     }
 
-    if (user.privacy === 'friends' && (!req.user || !user.friends.includes(req.user._id))) {
+    if (user.privacy === 'friends' && (!req.user || !isFriend)) {
       // Si el perfil es solo para amigos, mostrar información limitada
       return res.status(200).json({
         status: 'success',
@@ -285,6 +293,7 @@ exports.getProfileBySlug = async (req, res) => {
           username: user.username,
           profilePicture: user.profilePicture,
           privacy: user.privacy,
+         // isFriend: false, // Añadir este campo
         },
       });
     }
@@ -292,7 +301,10 @@ exports.getProfileBySlug = async (req, res) => {
     // Si el perfil es público o el usuario tiene acceso, mostrar toda la información
     res.status(200).json({
       status: 'success',
-      data: user,
+      data: {
+        ...user.toObject(), // Convertir a objeto plano para poder añadir propiedades
+        isFriend
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -300,4 +312,15 @@ exports.getProfileBySlug = async (req, res) => {
       message: 'Error en el servidor',
     });
   }
+};
+
+
+
+
+exports.getAuthenticatedUser = async (req, res) => {
+  console.log("scdnñlcdsñljvndjl");
+  if (!req.user) {
+    return res.status(401).json({ message: 'No estás autenticado' });
+  }
+  res.status(200).json({ userId: req.user._id });
 };

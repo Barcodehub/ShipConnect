@@ -21,4 +21,6 @@ router.put('/cover-picture', protect, upload.single('image'), userController.upd
 
 // Nueva ruta para ver perfiles de usuario por slug
 router.get('/:slug', userController.getProfileBySlug);
+
+router.get('/user', protect, userController.getAuthenticatedUser);
 module.exports = router;
