@@ -56,7 +56,7 @@ exports.getReels = async (req, res) => {
         { author: { $in: friendIds }, privacy: 'friends' },
         { privacy: 'public' }
       ]
-    }).populate('author', 'username').sort('-createdAt');
+    }).populate('author', 'username profilePicture').sort('-createdAt');
     res.json(reels);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -66,7 +66,7 @@ exports.getReels = async (req, res) => {
 exports.getMyReels = async (req, res) => {
   try {
     const reels = await Reel.find({ author: req.user.id })
-      .populate('author', 'username')
+      .populate('author', 'username profilePicture')
       .sort('-createdAt');
     res.json(reels);
   } catch (error) {
