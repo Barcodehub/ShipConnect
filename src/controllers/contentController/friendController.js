@@ -126,3 +126,19 @@ exports.removeFriend = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+exports.getActiveFriends = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate({
+      path: 'friends',
+      match: { isOnline: true }, // Solo amigos que están online
+      select: 'username profilePicture',
+    });
+
+    res.json(user.friends);
+  } catch (error) {
+    res.status(500).json({ message: 'Error interno del servidor' });
+  }
+};

@@ -14,7 +14,7 @@ exports.createStory = async (req, res) => {
       const result = await cloudinary.uploader.upload(req.file.path, {
         folder: `stories/${req.user.id}`,
       });
-      console.log('Cloudinary upload result:', result);
+      //console.log('Cloudinary upload result:', result);
       mediaUrl = result.secure_url;
       mediaPublicId = result.public_id; // Guardar el public_id
     }
@@ -30,14 +30,14 @@ exports.createStory = async (req, res) => {
     });
 
     await newStory.save();
-    console.log('Story saved:', newStory);
+    //console.log('Story saved:', newStory);
 
     // Actualizar el usuario para incluir el nuevo Story
     await User.findByIdAndUpdate(req.user.id, { $push: { stories: newStory._id } });
 
     // Eliminar el archivo local después de subirlo a Cloudinary
     await fs.unlink(req.file.path);
-    console.log('Local file deleted:', req.file.path);
+    //console.log('Local file deleted:', req.file.path);
 
     res.status(201).json(newStory);
   } catch (error) {

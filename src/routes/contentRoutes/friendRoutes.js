@@ -13,4 +13,8 @@ router.get('/status/:userId', protect, friendController.getFriendshipStatus);
 router.get('/myfriends', protect, friendController.getMyFriends);
 router.get('/user/:userId', friendController.getUserFriends);
 
+
+router.get('/active-friends', protect, friendController.getActiveFriends);
+
+
 module.exports = router;

@@ -103,6 +103,9 @@ exports.login = async (req, res) => {
       });
     }
 
+    user.isOnline = true;
+    await user.save();
+    
     // Si el usuario tiene 2FA habilitado, no inicie sesión aún
     if (user.twoFactorSecret) {
       return res.status(200).json({
@@ -113,8 +116,16 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
+      expiresIn: process.env.JWT_EXPIRATION,
     });
+
+      // Establecer un temporizador para cambiar online a false al expirar el token
+  const expirationTime = parseInt(process.env.JWT_EXPIRATION) * 24 * 60 * 60 * 1000; // Convierte a milisegundos
+  setTimeout(async () => {
+    user.isOnline = false;
+    await user.save();
+  }, expirationTime);
+
 
     res.status(200).json({
       status: 'success',
@@ -128,13 +139,25 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = (req, res) => {
-  res.cookie('jwt', 'loggedout', {
-    expires: new Date(Date.now() + 10 * 1000),
-    httpOnly: true,
-  });
-  res.status(200).json({ status: 'success' });
+exports.logout = async (req, res) => {
+  try {
+    
+      // Actualiza el estado `online` a false
+      await User.findByIdAndUpdate(req.user.id, { isOnline: false });
+    
+
+    // Limpia la cookie de sesión
+    res.cookie('jwt', 'loggedout', {
+      expires: new Date(Date.now() + 10 * 1000),
+      httpOnly: true,
+    });
+
+    res.status(200).json({ status: 'success', message: 'Cierre de sesión exitoso' });
+  } catch (error) {
+    res.status(500).json({ status: 'fail', message: 'Error al cerrar sesión' });
+  }
 };
+
 
 exports.generateTwoFactor = async (req, res) => {
   console.log('Generando 2FA para el usuario:', req.user);
