@@ -62,6 +62,7 @@ const userSchema = new mongoose.Schema({
       unique: true,
       lowercase: true
     },
+    isOnline: { type: Boolean, default: false }, // Indica si el usuario está conectado
 });
 
 userSchema.pre('save', async function(next) {
