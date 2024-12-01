@@ -23,4 +23,7 @@ router.put('/cover-picture', protect, upload.single('image'), userController.upd
 router.get('/:slug', userController.getProfileBySlug);
 
 router.get('/user', protect, userController.getAuthenticatedUser);
+
+
+router.get('/:username', protect, userController.getUserIdByUsername); //id user
 module.exports = router;

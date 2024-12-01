@@ -8,12 +8,17 @@ exports.getMessages = async (req, res) => {
         { sender: req.user._id, receiver: req.params.friendId },
         { sender: req.params.friendId, receiver: req.user._id }
       ]
-    }).sort('timestamp');
+    })
+      .sort('timestamp')
+      .populate('sender', 'username profilePicture') // Trae username y foto del remitente
+      .populate('receiver', 'username profilePicture'); // Trae username y foto del receptor
+
     res.json(messages);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 exports.sendMessage = async (req, res) => {
   try {
