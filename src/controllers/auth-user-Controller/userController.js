@@ -318,9 +318,25 @@ exports.getProfileBySlug = async (req, res) => {
 
 
 exports.getAuthenticatedUser = async (req, res) => {
-  console.log("scdnñlcdsñljvndjl");
   if (!req.user) {
     return res.status(401).json({ message: 'No estás autenticado' });
   }
   res.status(200).json({ userId: req.user._id });
+};
+
+
+
+// Función para obtener el ID del usuario por username
+exports.getUserIdByUsername = async (req, res) => {
+  try {
+      const user = await User.findOne({ username: req.params.username });
+      
+      if (!user) {
+          return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+
+      res.status(200).json({ userId: user._id });
+  } catch (error) {
+      res.status(500).json({ message: 'Error al obtener el usuario', error });
+  }
 };
