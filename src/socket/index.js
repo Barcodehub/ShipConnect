@@ -3,14 +3,14 @@ const Message = require('../models/chattingModel/Message');
 
 const setupSocketIO = (io) => {
   io.on('connection', (socket) => {
-    console.log('New client connected');
+   // console.log('New client connected');
     
     socket.on('join', async (userId) => {
       try {
         // Actualiza el estado de conexión
         await User.findByIdAndUpdate(userId, { isOnline: true });
         socket.join(userId);
-        console.log(`User ${userId} is online`);
+        //console.log(`User ${userId} is online`);
       } catch (error) {
         console.error('Error joining user:', error);
       }
