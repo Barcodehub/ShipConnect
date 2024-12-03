@@ -37,9 +37,9 @@ const setupMiddleware = (app) => {
     saveUninitialized: true,
     store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV,
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'None',
       maxAge: Number(process.env.SESSION_MAX_AGE) || 1000 * 60 * 60 * 24 * 7,
     },
   }));
@@ -51,8 +51,8 @@ const setupMiddleware = (app) => {
   // CSRF protection
   app.use(csrf({ 
     cookie: { 
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'None',
+      secure: process.env.NODE_ENV
     }
   }));
 
