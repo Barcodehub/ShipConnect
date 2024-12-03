@@ -175,11 +175,17 @@ ShipConnect is a social networking platform developed using Node.js and MongoDB.
     PORT: Port number the application will run on.
     MONGO_URI: MongoDB connection string.
     JWT_SECRET: Secret key for JWT.
+    SESSION_SECRET: tu_secreto_de_sesion_seguro
+    SMTP_HOST: Config email service
+    SMTP_PORT: Config email service
+    SMTP_EMAIL: Config email service
+    SMTP_PASSWORD: Config email service
+    FROM_EMAIL: Config email service
+    FROM_NAME: Config email service
     GOOGLE_CLIENT_ID: Google OAuth client ID.
     GOOGLE_CLIENT_SECRET: Google OAuth client secret.
-    EMAIL_SERVICE: Email service provider.
-    EMAIL_USERNAME: Email service username.
-    EMAIL_PASSWORD: Email service password.
+    ADMIN_EMAIL: email default admin init
+    ADMIN_PASSWORD: pass default admin init
     CLOUDINARY_CLOUD_NAME: Cloudinary cloud name.
     CLOUDINARY_API_KEY: Cloudinary API key.
     CLOUDINARY_API_SECRET: Cloudinary API secret.
@@ -188,7 +194,11 @@ ShipConnect is a social networking platform developed using Node.js and MongoDB.
     RATE_LIMIT_WINDOW_MS: Time window in milliseconds for rate limiting (3600000 ms = 1 hour)
     BODY_LIMIT: Size limit for JSON and URL-encoded request bodies
     SESSION_MAX_AGE: Maximum session lifetime in milliseconds (604800000 ms = 7 days)
-
+    JWT_EXPIRATION: Time expire token auth
+    BACKEND_URL: Url back
+    FRONTEND_URL: Url front
+    
+    
 ## Installation and Setup
 
 1. Clone the repository:
