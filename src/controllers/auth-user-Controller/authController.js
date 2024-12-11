@@ -77,6 +77,23 @@ exports.signup = async (req, res) => {
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
         expiresIn: '1d',
       });
+
+           // Enviar email de confirmación
+    const emailMessage = `
+    Hola ${newUser.username},
+    
+    ¡Gracias por registrarte en nuestra plataforma! Por favor,disfruta haciendo clic en el siguiente enlace:
+
+    ${process.env.FRONTEND_URL}/home?token=${token}
+    
+    Si no reconoces esta actividad, por favor ignora este correo.
+  `;
+
+  await sendEmail({
+    email: newUser.email,
+    subject: 'Confirma tu correo electrónico',
+    message: emailMessage,
+  });
   
       res.status(201).json({
         status: 'success',
