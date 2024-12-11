@@ -26,6 +26,10 @@
 
 ShipConnect is a social networking platform developed using Node.js and MongoDB. It features user authentication with diverse roles, multimedia content sharing, community and event management, social interactions (comments, likes, friend requests), real-time instant messaging, and a personalized news feed. The application emphasizes security, implementing two-factor authentication, protection against common web vulnerabilities, and privacy controls for user content.
 
+## Cloud Arquitecture
+
+[Cloud Arquitecture](https://drive.google.com/file/d/1eKKje0V4KPHivQBr9aVmnPminhvCMsyz/view?usp=sharing)
+
 ## Technologies Used
 
   - Express: A Node.js framework for building web applications.
