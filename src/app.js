@@ -23,8 +23,7 @@ const app = express();
 const corsOptions = {
   origin: process.env.FRONTEND_URL, // URL de tu frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
-  exposedHeaders: ['X-CSRF-Token'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
 

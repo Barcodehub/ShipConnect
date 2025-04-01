@@ -3,7 +3,6 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
-const csrf = require('csurf');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -48,17 +47,6 @@ const setupMiddleware = (app) => {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // CSRF protection
-  app.use(csrf({ 
-    cookie: { 
-      sameSite: 'None',
-      secure: process.env.NODE_ENV
-    }
-  }));
-
-  app.get('/api/auth/csrf-token', (req, res) => {
-    res.json({ csrfToken: req.csrfToken() });
-  });
 };
 
 module.exports = setupMiddleware;
